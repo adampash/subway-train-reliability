@@ -2,14 +2,14 @@ d3 = require 'd3'
 $ = require 'jQuery'
 
 window.BarChart =
-  barHeight: 32
+  barHeight: 34
   width: 420
   init: ->
     @width = $('.chart').width()
     $('.chart').height(DATA.length * (@barHeight))
 
   clean_num: (num) ->
-    parseFloat num.replace(",", "")
+    parseFloat num.replace(",", "") if typeof num is "string"
   getXData: (key) ->
     DATA.map (data) =>
       @clean_num data[key]
@@ -19,7 +19,7 @@ window.BarChart =
     @init()
     X_DATA = @getXData(key)
     x = d3.scale.linear()
-          .domain([0, 15000])
+          .domain([0, d3.max(X_DATA)])
           .range([0, @width])
 
     @chart = d3.select(".chart")
@@ -38,7 +38,10 @@ window.BarChart =
 
     @bar.append("text")
         .attr("x", (d) =>
-          x(@clean_num d[key]) - 3
+          Math.max(
+            x(@clean_num d[key]) - 3,
+            40
+          ) or 40
         )
         .attr("y", @barHeight - 10)
         .attr("dy", ".35em")
@@ -49,13 +52,13 @@ window.BarChart =
         .attr("x", 3)
         .attr("y", 10)
         .attr("dy", ".35em")
-        .text (d) -> d["Type of Delay"]
+        .text (d) -> d["Type of Train"]
 
   updateGraph: (key) ->
     $('h2.operation').text(key.replace(/with /i, 'w/'))
     X_DATA = @getXData(key)
     x = d3.scale.linear()
-          .domain([0, 15000])
+          .domain([0, d3.max(X_DATA)])
           .range([0, @width])
 
     @chart.attr("height", @barHeight * X_DATA.length)
@@ -69,7 +72,10 @@ window.BarChart =
     @bar.transition()
       .select("text")
         .attr("x", (d) =>
-          Math.max((x(@clean_num d[key]) - 3) or 100)
+          Math.max(
+            x(@clean_num d[key]) - 3,
+            40
+          ) or 40
         )
         .attr("dy", ".35em")
         .text (d) ->
@@ -79,9 +85,6 @@ window.BarChart =
     _ = require 'underscore'
     operations = _.keys(DATA[0])
     operations.shift()
-
-    operations = operations.sort (a, b) ->
-      a.indexOf('2013') < b.indexOf('2013')
 
     for operation in operations
       display_operation = operation
@@ -107,4 +110,4 @@ window.BarChart =
 
 
 BarChart.showOperations()
-BarChart.renderGraph("12/1/2013")
+BarChart.renderGraph("Number In Service")
