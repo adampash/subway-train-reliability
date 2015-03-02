@@ -86,17 +86,20 @@ window.BarChart =
     operations = _.keys(DATA[0])
     operations.shift()
 
+    i = 0
     for operation in operations
       display_operation = operation
                     .toLowerCase()
                     # .replace("inpatient", "(in)")
                     # .replace("outpatient", "(out)")
                     # .replace("with ", "w/")
+      i++
       $('.operations').append """
         <div class="operation" data-op="#{operation}">
          #{display_operation}
         </div>
       """
+      $('.operations').append "<br>" if i is 2
 
     $('div.operation').first().addClass('selected')
 
