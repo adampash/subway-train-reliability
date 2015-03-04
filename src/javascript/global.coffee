@@ -113,4 +113,4 @@ window.BarChart =
 
 
 BarChart.showOperations()
-BarChart.renderGraph("Number In Service")
+BarChart.renderGraph("Number Of Trains")
